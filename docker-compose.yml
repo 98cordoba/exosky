@@ -5,7 +5,7 @@ services:
   web:
     build:  # Build the service's image from the current directory
       context: .
-      dockerfile: Dockerfile
+      dockerfile: dev.Dockerfile
     command: bundle exec rails s -p 3000 -b '0.0.0.0'  # Command to start the Rails server
     ports:
       - "3000:3000"  # Expose ports for accessing the application
