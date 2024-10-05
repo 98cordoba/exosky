@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  # Service for the Ruby on Rails web application
+  web:
+    build:  # Build the service's image from the current directory
+      context: .
+      dockerfile: dev.Dockerfile
+    command: bundle exec rails s -p 3000 -b '0.0.0.0'  # Command to start the Rails server
+    ports:
+      - "3000:3000"  # Expose ports for accessing the application
+    volumes:
+      - .:/app  # Mount the current directory inside the container
+    depends_on:
+      - db  # Specify dependency on the database service
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/exosky  # Database connection parameters
+      SECRET_KEY_BASE: Rails.application.credentials.secret_key_base
+
+  # Service for the PostgreSQL database
+  db:
+    image: postgres:13 # Use the official PostgreSQL version 13 image
+    ports:
+      - "5433:5432"  # Expose port for accessing the database
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Create a volume for storing database data
+    environment:
+      POSTGRES_USER: postgres  # Set the username for database access
+      POSTGRES_PASSWORD: postgres  # Set the password for database access
+      # POSTGRES_DB: exo_sky_development  # Set the database name
+# Define a volume for storing PostgreSQL data
+volumes:
+  postgres_data:
