@@ -7,13 +7,16 @@ FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim as base
 # Rails app lives here
 WORKDIR /rails
 
-# Set production environment
+# Set development environment
 ENV RAILS_ENV="development" \
     BUNDLE_WITHOUT=""
 
-# Install packages needed to build gems
+# Install packages needed to build gems, Node.js, Yarn, and PostCSS dependencies for TailwindCSS
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libpq-dev libvips pkg-config curl
+    apt-get install --no-install-recommends -y build-essential git libpq-dev libvips pkg-config curl nodejs npm
+
+# Install Yarn (required for managing TailwindCSS)
+RUN npm install --global yarn
 
 # Install Python and pip
 RUN apt-get update && apt-get install -y python3 python3-pip python3-venv
@@ -32,6 +35,12 @@ ENV PATH="/opt/venv/bin:$PATH"
 COPY Gemfile Gemfile.lock ./
 RUN bundle install
 
+# Install TailwindCSS via Yarn
+COPY package.json yarn.lock ./
+RUN yarn install
+
+# Initialize TailwindCSS if you haven't already
+RUN yarn tailwindcss init
 
 # Copy the rest of the application code
 COPY . .
@@ -39,9 +48,12 @@ COPY . .
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
 
+# Precompile assets (including TailwindCSS)
+RUN bundle exec rails assets:precompile
+
 # Create the user and set permissions
 RUN useradd rails --create-home --shell /bin/bash && \
-    chown -R rails:rails /rails 
+    chown -R rails:rails /rails
 
 # Switch to the non-root user
 USER rails
