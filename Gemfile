@@ -32,6 +32,11 @@ gem "jbuilder"
 # Use Redis adapter to run Action Cable in production
 gem "redis", ">= 4.0.1"
 
+# Open AI
+gem 'httparty'
+gem 'openai', '~> 0.3.0'
+gem "ruby-openai"
+
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"
 
