@@ -1,5 +1,5 @@
 class HomeController < ApplicationController
   def welcome
-    @exoplanets = []
+    @exoplanets = Exoplanet.all
   end
 end
