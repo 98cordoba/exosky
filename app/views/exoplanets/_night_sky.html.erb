@@ -1,0 +1,8 @@
+<div id="main-frame" data-controller="exosky"
+     data-exoplanet='<%= raw exoplanet.to_json %>' 
+     data-stars='<%= raw stars.to_json %>'>
+  <select data-action="change->exosky#selectExoplanet" data-exosky-target="exoplanet">
+
+  </select>
+  <div data-exosky-target="canvas"></div>
+</div>

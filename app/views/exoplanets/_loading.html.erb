@@ -1,0 +1,12 @@
+<%= turbo_stream_from "gaia-channel-#{@session_id}" %>
+<div id="main-frame" data-session-id="<%= @session_id %>">
+  <div data-controller="loading" data-loading-galaxy="<%= asset_path('galaxy.jpg') %>">
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+      <div class="flex justify-center items-center text-cyan-500 shadow-cyan-50 font-bold text-3xl">
+        Loading
+      </div>
+    </div>
+    <div data-loading-target="canvas" class="w-full h-full fixed top-0 left-0"></div>
+  </div>
+</div>
+
