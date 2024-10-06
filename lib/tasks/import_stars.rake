@@ -2,7 +2,7 @@ namespace :invoke do
   desc "Import star data from a JSON file into the database"
 
   task stars: :environment do
-    begin 
+    begin
       require 'json'
 
       file_path = 'db/seeding_files/star_database.json'
@@ -13,27 +13,30 @@ namespace :invoke do
       end
 
       file_contents = File.read(file_path)
+      file_contents.gsub!('NaN', 'null')
       stars = JSON.parse(file_contents)
-      
-      stars.each do |star|
-        puts "Importing star: #{star['source_id']}"
-        begin
-          star = Star.find_or_initialize_by(source_id: star['source_id'])
-          star.dec = star_data['dec'].nan? ? nil : star_data['dec']
-          star.mass_flame = star_data['mass_flame'].nan? ? nil : star_data['mass_flame']
-          star.parallax = star_data['parallax'].nan? ? nil : star_data['parallax']
-          star.phot_g_mean_mag = star_data['phot_g_mean_mag'].nan? ? nil : star_data['phot_g_mean_mag']
-          star.ra = star_data['ra'].nan? ? nil : star_data['ra']
-          star.source_id = star_data['source_id']
 
-            if star.save!
-              puts "Imported star: #{star.source_id}"
-            else
-              puts "Failed to import star: #{star['source_id']}, error: #{star.error}"
-            end
+      stars.each do |star_data|
+        puts "Importing star: #{star_data['source_id']}"
+        begin
+          star = Star.find_or_initialize_by(source: star_data['source_id'])
+
+          star.dec = star_data['dec']
+          star.mass_flame = star_data['mass_flame']
+          star.parallax = star_data['parallax']
+          star.phot_g_mean_mag = star_data['phot_g_mean_mag']
+          star.ra = star_data['ra']
+
+          if star.save
+            puts "Imported star: #{star.source}"
+          else
+            puts "Failed to import star: #{star.source}, errors: #{star.errors.full_messages.join(', ')}"
+          end
+        rescue => e
+          puts "Failed to import star: #{star_data['source_id']}, error: #{e.message}"
         end
       end
-    rescue => e 
+    rescue => e
       puts "ERROR MESSAGE: #{e}"
     end
   end
