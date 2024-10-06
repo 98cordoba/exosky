@@ -19,7 +19,23 @@ FROM base as build
 
 # Install packages needed to build gems
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libpq-dev libvips pkg-config
+    apt-get install --no-install-recommends -y build-essential git libpq-dev libvips pkg-config curl nodejs npm
+
+# Install Yarn (required for managing TailwindCSS)
+RUN npm install --global yarn
+
+# Install Python and pip
+RUN apt-get update && apt-get install -y python3 python3-pip python3-venv
+
+# Create a virtual environment
+RUN python3 -m venv /opt/venv
+
+# Activate the virtual environment and install dependencies
+RUN /opt/venv/bin/pip install --upgrade pip && \
+    /opt/venv/bin/pip install -U --pre astroquery pandas
+
+# Set the path to use the virtual environment
+ENV PATH="/opt/venv/bin:$PATH"
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
@@ -27,10 +43,16 @@ RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile
 
+# Install TailwindCSS via Yarn
+COPY package.json yarn.lock ./
+RUN yarn install
+
+# Initialize TailwindCSS if you haven't already
+RUN yarn tailwindcss init
+
 # Copy application code
 COPY . .
 
-# Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
 
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
@@ -59,4 +81,5 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
-CMD ["./bin/rails", "server"]
+# CMD ["./bin/rails", "server"]
+CMD ["foreman", "start", "-f", "Procfile.dev"]
