@@ -79,6 +79,7 @@ test:
 #
 production:
   <<: *default
-  database: exosky_production
+  database: exosky
   username: exosky
   password: <%= ENV["EXOSKY_DATABASE_PASSWORD"] %>
+  host: db
