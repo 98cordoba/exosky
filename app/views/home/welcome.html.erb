@@ -1,19 +1,28 @@
 <div id="main-frame">
     <div data-controller="welcome" data-welcome-galaxy="<%= asset_path('galaxy.jpg') %>">
-        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
-            <div class="flex justify-center items-center text-cyan-500 shadow-cyan-50 font-bold text-3xl">
-                ExoSky
+        <div style="display: grid; place-items: center; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 50; text-align: center;">
+            <div style="font-family: 'Protest Strike', sans-serif; color: white; font-size: 3rem;">
+                Welcome to the AstroMichi's exploration module
             </div>
             <select id="exoplanet-select" 
                     data-action="change->welcome#selectExoplanet"
                     data-welcome-target="exoplanet"
-                    class="mt-2 p-2 bg-gray-900 text-white rounded-lg border border-gray-600 shadow-lg hover:shadow-cyan-500/50 focus:ring-4 focus:ring-cyan-300 focus:outline-none transition duration-300 ease-in-out">
-                <option class="text-white font-bold" value="">Select an Exoplanet</option>
+                    style="width: 300px; height: 40px; text-align: center; margin-top: 0.5rem; padding: 0.5rem; background-color: #1a202c; color: white; border-radius: 0.5rem; border: 1px solid #4a5568; box-shadow: 0 0 10px rgba(0, 255, 255, 0.5); transition: all 0.3s ease-in-out;">
+                <option style="text-align: center; color: white; font-weight: bold;" value="">Select your Exoplanet</option>
                 <% @exoplanets.each do |exoplanet| %>
                     <option value="<%= exoplanet.id %>"><%= exoplanet.pl_name %></option>
                 <% end %>
             </select>
         </div>
-        <div data-welcome-target="canvas" class="w-full h-full fixed top-0 left-0"></div>
+        <div data-welcome-target="canvas" style="width: 100%; height: 100%; position: fixed; top: 0; left: 0;"></div>
     </div>
+    <footer style="position: absolute; bottom: 0; width: 100%; text-align: center; background-color: #1a202c; color: white; padding: 1rem; font-family: 'Arial', sans-serif;">
+        <p>Explore the night sky and see what the stars would look like from the perspective of the selected exoplanet</p>
+    </footer>
 </div>
+
+<style>
+  #exoplanet-select:hover {
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+  }
+</style>

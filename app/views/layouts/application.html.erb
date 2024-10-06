@@ -10,6 +10,10 @@
     <%= stylesheet_link_tag "application", "data-turbo-track": Rails.env.production? ? "reload" : "" %>
     <%= javascript_importmap_tags %>
     <%= hotwire_livereload_tags if Rails.env.development? %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Protest+Strike&display=swap" rel="stylesheet">
+
   </head>
 
   <body>
@@ -18,3 +22,11 @@
     </main>
   </body>
 </html>
+<style>
+  .protest-font {
+  font-family: "Protest Strike", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+
+</style>

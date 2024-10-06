@@ -2,11 +2,61 @@
 <div id="main-frame" data-session-id="<%= @session_id %>">
   <div data-controller="loading" data-loading-galaxy="<%= asset_path('galaxy.jpg') %>">
     <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+        <div style="font-family: 'Protest Strike', sans-serif; color: white; font-size: 3rem;">
+            Let's explore the universe together
+        </div>
       <div class="flex justify-center items-center text-cyan-500 shadow-cyan-50 font-bold text-3xl">
         Loading
       </div>
+      <div class="progress-bar" style="width: 100%; background-color: #4a5568; border-radius: 0.5rem; overflow: hidden; margin-top: 1rem;">
+        <div class="progress-bar-inner" style="width: 50%; height: 1rem; background-color: #00ffff; transition: width 0.3s ease-in-out;"></div>
+      </div>
+      <img src="<%= asset_path('astro-michis.png') %>" alt="Centered Image" class="centered-image" style="display: block; margin: 1rem auto; width: 300px; height: auto;">
     </div>
     <div data-loading-target="canvas" class="w-full h-full fixed top-0 left-0"></div>
   </div>
 </div>
 
+<style>
+  .progress-bar {
+    width: 100%;
+    background-color: #4a5568;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    margin-top: 1rem;
+  }
+.progress-bar-inner {
+  width: 0%; /* Start at 0% */
+  height: 1rem;
+  background-color: #00ffff;
+  transition: width 0.3s ease-in-out;
+}
+
+  .centered-image {
+    display: block;
+    margin: 1rem auto;
+    width: 300px;
+    height: auto;
+  }
+</style>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+  const progressBar = document.querySelector(".progress-bar-inner");
+  
+  // Function to simulate progress
+  function simulateProgress() {
+    let progress = 0;
+    const interval = setInterval(function() {
+      if (progress >= 100) {
+        clearInterval(interval);
+      } else {
+        progress += 1;
+        progressBar.style.width = progress + "%";
+      }
+    }, 50); // Adjust this interval time to control speed (50ms for smooth progress)
+  }
+  
+  // Call the function to simulate progress
+  simulateProgress();
+});
+</script>

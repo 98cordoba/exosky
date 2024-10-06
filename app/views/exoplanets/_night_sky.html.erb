@@ -1,8 +1,127 @@
-<div id="main-frame" data-controller="exosky"
-     data-exoplanet='<%= raw exoplanet.to_json %>' 
-     data-stars='<%= raw stars.to_json %>'>
-  <select data-action="change->exosky#selectExoplanet" data-exosky-target="exoplanet">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Hub Interface</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: black;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+        .menu-icons {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 100;
+        }
+        .menu-icons .material-icons {
+            color: white;
+            font-size: 36px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .menu-icons .material-icons:hover {
+            transform: scale(1.2);
+        }
+        .main-frame {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 50;
+            text-align: center;
+        }
+        .main-frame .title {
+            color: cyan;
+            font-size: 3rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px cyan;
+        }
+        #exoplanet-select {
+            margin-top: 20px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            border: 1px solid cyan;
+            border-radius: 10px;
+            box-shadow: 0 0 10px cyan;
+            transition: box-shadow 0.3s;
+        }
+        #exoplanet-select:hover {
+            box-shadow: 0 0 20px cyan;
+        }
+        .tools-container {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            width: 250px;
+            z-index: 100;
+        }
+        .tools-container .tools {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+        .tools-container .material-icons {
+            color: white;
+            font-size: 36px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .tools-container .material-icons:hover {
+            transform: scale(1.2);
+        }
+        .dashboard-border {
+            border: 2px solid cyan;
+            padding: 10px;
+            border-radius: 15px;
+        }
+        .canvas-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu Icons -->
+    <div class="menu-icons">
+        <span class="material-icons">menu</span>
+        <span class="material-icons">home</span>
+        <span class="material-icons">picture_as_pdf</span>
+        <span class="material-icons">settings</span>
+        <span class="material-icons">info</span>
+    </div>
 
-  </select>
-  <div data-exosky-target="canvas"></div>
-</div>
+
+    <!-- Tools Container -->
+    <div class="tools-container dashboard-border">
+        <h4>Navigation Tools</h4>
+        <div class="tools">
+            <span class="material-icons">explore</span>
+            <span class="material-icons">flight</span>
+            <span class="material-icons">gps_fixed</span>
+        </div>
+    </div>
+
+    <!-- Canvas Background -->
+    <div data-welcome-target="canvas" class="canvas-background"></div>
+</body>
+</html>
