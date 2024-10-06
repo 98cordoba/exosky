@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_05_230804) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_06_043609) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -109,6 +109,22 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_05_230804) do
     t.date "rowupdate"
     t.date "pl_pubdate"
     t.date "releasedate"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "stars", force: :cascade do |t|
+    t.string "catalog_id"
+    t.string "component_type"
+    t.string "source"
+    t.decimal "ra", precision: 12, scale: 8
+    t.decimal "dec", precision: 12, scale: 8
+    t.decimal "pm_ra", precision: 10, scale: 2
+    t.decimal "pm_dec", precision: 10, scale: 2
+    t.decimal "v_mag", precision: 6, scale: 3
+    t.decimal "bt_mag", precision: 6, scale: 3
+    t.decimal "vt_mag", precision: 6, scale: 3
+    t.string "tycho_flag"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
