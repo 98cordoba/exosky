@@ -1,3 +1,26 @@
+//The visualization of stars and exoplanets is done using Three.js
+//To understand the principles of the data we will interact with
+//We need to understand the Celestial Sphere and the Equatorial Coordinate System
+//The Celestial Sphere is an imaginary sphere of infinite radius surrounding the Earth
+//Celestial objects use Right Ascension and Declination to describe their position on the Celestial Sphere
+//Right Ascension is the celestial equivalent of longitude and it is how far east an object is from the vernal equinox
+//attributeName: rac
+//'rac' corresponds to the values hour, minute, and second
+// astroquery.gaia library from python has rac values in kiloparsecs which is a unit of distance and we convert it to degrees
+
+
+//Declination is the celestial equivalent of latitude, it is how far north or south an object is from the celestial equator
+//attributeName: dec
+//'dec' comes in kiloparsecs
+// astroquery.gaia library from python has dec values like 0d 0m 0s
+
+
+//Parallax is the apparent shift in the position of an object when viewed from two different points
+//attributeName: plx
+//Parallax is measured in milliarcseconds (mas) and it is used to calculate the distance to the star
+
+//We will display stars relative to the selected exoplanet using the astroquery.gaia library
+//We use a fetch to the controller action that will return the selecte exoplanet and the stars with a cone of view
 import { Controller } from "@hotwired/stimulus";
 import * as THREE from "three";
 import { OrbitControls } from "OrbitControls";
