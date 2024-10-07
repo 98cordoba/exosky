@@ -79,7 +79,12 @@ test:
 #
 production:
   <<: *default
-  database: exosky
-  username: exosky
-  password: <%= ENV["EXOSKY_DATABASE_PASSWORD"] %>
-  host: db
+  # database: exosky
+  # username: exosky
+  # password: <%= ENV["EXOSKY_DATABASE_PASSWORD"] %>
+  # host: db
+  username: postgres
+  password: <%= Rails.application.credentials.db[:password] %>
+  database: exosky-db
+  host: <%= Rails.application.credentials.db[:host] %>
+  port: 5432
