@@ -31,7 +31,7 @@ class ExoplanetsController < ApplicationController
     @session_id = SecureRandom.uuid
     @exoplanet = Exoplanet.find(params[:id])
 
-    gaia_service = GaiaQueryJob.perform_later(@exoplanet, @session_id)
+    GaiaQueryJob.perform_later(@exoplanet, @session_id)
 
     @exoplanet = Exoplanet.find(params[:id])
     respond_to do |format|
