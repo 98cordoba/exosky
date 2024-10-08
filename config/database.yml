@@ -85,6 +85,6 @@ production:
   # host: db
   username: postgres
   password: <%= Rails.application.credentials.db[:password] %>
-  database: exosky-db
+  database: <%= Rails.application.credentials.db[:db_name] %>
   host: <%= Rails.application.credentials.db[:host] %>
   port: 5432
