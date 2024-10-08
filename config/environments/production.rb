@@ -94,4 +94,13 @@ Rails.application.configure do
   # ]
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+  # 
+  # Deshabilitar Google Cloud Logging
+  config.google_cloud.use_logging = false
+
+  # Deshabilitar Google Cloud Error Reporting
+  config.google_cloud.use_error_reporting = false
+
+  # Deshabilitar Google Cloud Trace
+  config.google_cloud.use_trace = false
 end
