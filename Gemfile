@@ -78,3 +78,10 @@ group :test do
 end
 
 gem "requestjs-rails"
+
+gem 'foreman', '~> 0.87.2'
+
+# Deploy this application anywhere as a Docker container [https://kamal-deploy.org]
+gem "kamal", require: false
+# Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
+gem "thruster", require: false

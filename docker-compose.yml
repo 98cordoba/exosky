@@ -1,4 +1,4 @@
-version: '3'
+# version: '3'
 
 services:
   # Service for the Ruby on Rails web application
@@ -6,30 +6,43 @@ services:
     build:  # Build the service's image from the current directory
       context: .
       dockerfile: Dockerfile
-    command: bundle exec rails s -p 3000 -b '0.0.0.0'  # Command to start the Rails server
+    command: bundle exec rails s -p 8080 -b '0.0.0.0'  # Command to start the Rails server
     entrypoint: ["/bin/bash", "/rails/bin/docker-entrypoint"]
     ports:
-      - "3000:3000"  # Expose ports for accessing the application
+      - "8080:8080"  # Expose ports for accessing the application
     volumes:
       - .:/app  # Mount the current directory inside the container
+      # - ./config/master.key:/rails/config/master.key  # Mount the master key into the container
+      # - ./config/credentials/production.key:/rails/config/credentials/production.key  # Mount the master key into the container
+    # depends_on:
+    #   - db  # Specify dependency on the database service
     depends_on:
-      - db  # Specify dependency on the database service
+        - redis
     environment:
-      DATABASE_URL: postgres://postgres:postgres@db:5432/exosky  # Database connection parameters
+      # DATABASE_URL: postgres://postgres:postgres@db:5432/exosky  # Database connection parameters
+      DATABASE_URL: Rails.application.credentials.db[:url]
       SECRET_KEY_BASE: Rails.application.credentials.secret_key_base
       PORT: 8080
+      REDIS_URL: redis://redis:6379/1
 
-  # Service for the PostgreSQL database
-  db:
-    image: postgres:13 # Use the official PostgreSQL version 13 image
+  redis:
+    image: "redis:7-alpine"
     ports:
-      - "5433:5432"  # Expose port for accessing the database
+      - 6379
     volumes:
-      - postgres_data:/var/lib/postgresql/data  # Create a volume for storing database data
-    environment:
-      POSTGRES_USER: postgres  # Set the username for database access
-      POSTGRES_PASSWORD: postgres  # Set the password for database access
-      # POSTGRES_DB: exo_sky_development  # Set the database name
-# Define a volume for storing PostgreSQL data
-volumes:
-  postgres_data:
+      - ./tmp/redis_data:/var/lib/redis/data
+
+#   # Service for the PostgreSQL database
+#   db:
+#     image: postgres:13 # Use the official PostgreSQL version 13 image
+#     ports:
+#       - "5433:5432"  # Expose port for accessing the database
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data  # Create a volume for storing database data
+#     environment:
+#       POSTGRES_USER: postgres  # Set the username for database access
+#       POSTGRES_PASSWORD: postgres  # Set the password for database access
+#       # POSTGRES_DB: exo_sky_development  # Set the database name
+# # Define a volume for storing PostgreSQL data
+# volumes:
+#   postgres_data:

@@ -1,11 +1,23 @@
-# syntax = docker/dockerfile:1
+# syntax=docker/dockerfile:1
+# check=error=true
 
-# Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
+# This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
+# docker build -t ankari .
+# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name ankari ankari
+
+# For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
+
+# Make sure RUBY_VERSION matches the Ruby version in .ruby-version
 ARG RUBY_VERSION=3.3.0
-FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim as base
+FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 
 # Rails app lives here
 WORKDIR /rails
+
+# Install base packages
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y curl libjemalloc2 libvips postgresql-client && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Set production environment
 ENV RAILS_ENV="production" \
@@ -13,29 +25,26 @@ ENV RAILS_ENV="production" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development"
 
-
 # Throw-away build stage to reduce size of final image
-FROM base as build
+FROM base AS build
 
 # Install packages needed to build gems
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libpq-dev libvips pkg-config curl nodejs npm
+    apt-get install --no-install-recommends -y build-essential git libpq-dev pkg-config nodejs npm python3 python3-pip python3-venv libssl-dev zlib1g-dev && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-# Install Yarn (required for managing TailwindCSS)
+
+# Install Yarn globally for managing TailwindCSS
 RUN npm install --global yarn
 
-# Install Python and pip
-RUN apt-get update && apt-get install -y python3 python3-pip python3-venv
-
-# Create a virtual environment
-RUN python3 -m venv /opt/venv
-
-# Activate the virtual environment and install dependencies
-RUN /opt/venv/bin/pip install --upgrade pip && \
+# Set up Python environment and upgrade pip
+RUN python3 -m venv /opt/venv && \
+    /opt/venv/bin/pip install --upgrade pip && \
     /opt/venv/bin/pip install -U --pre astroquery pandas
 
-# Set the path to use the virtual environment
+# Ensure Python environment is on the PATH
 ENV PATH="/opt/venv/bin:$PATH"
+ENV PORT=8080
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
@@ -43,43 +52,57 @@ RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile
 
-# Install TailwindCSS via Yarn
+
+# Install TailwindCSS and its dependencies
 COPY package.json yarn.lock ./
 RUN yarn install
 
-# Initialize TailwindCSS if you haven't already
+# Initialize TailwindCSS if not already
 RUN yarn tailwindcss init
+
 
 # Copy application code
 COPY . .
 
+# Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
 
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
 RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
 
+
+
 # Final stage for app image
 FROM base
 
-# Install packages needed for deployment
+# Install packages needed to build gems
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libvips postgresql-client && \
+    apt-get install --no-install-recommends -y build-essential git libpq-dev pkg-config nodejs npm python3 python3-pip python3-venv libssl-dev zlib1g-dev && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
+# Copy Python virtual environment from the build stage
+COPY --from=build /opt/venv /opt/venv
+
+# Ensure Python environment is on the PATH in the final image
+ENV PATH="/opt/venv/bin:$PATH"
+ENV PORT=8080
+# ENV PATH="/usr/local/bundle/bin:${PATH}"
+
 
 # Copy built artifacts: gems, application
-COPY --from=build /usr/local/bundle /usr/local/bundle
+COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --from=build /rails /rails
 
 # Run and own only the runtime files as a non-root user for security
-RUN useradd rails --create-home --shell /bin/bash && \
+RUN groupadd --system --gid 1000 rails && \
+    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
     chown -R rails:rails db log storage tmp
-USER rails:rails
+USER 1000:1000
 
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
-# Start the server by default, this can be overwritten at runtime
-EXPOSE 3000
-# CMD ["./bin/rails", "server"]
-CMD ["foreman", "start", "-f", "Procfile.dev"]
+# Start server via Thruster by default, this can be overwritten at runtime
+EXPOSE 8080
+# Modify the CMD to remove ./bin/thrust and only start the Rails server
+CMD ["./bin/rails", "server", "-b", "0.0.0.0", "-p", "8080"]

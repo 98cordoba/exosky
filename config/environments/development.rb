@@ -79,12 +79,12 @@ Rails.application.configure do
   config.hotwire_livereload.force_reload_paths << Rails.root.join("app/javascript")
 
   # Deshabilitar Google Cloud Logging
-config.google_cloud.use_logging = false
+  config.google_cloud.use_logging = false
 
-# Deshabilitar Google Cloud Error Reporting
-config.google_cloud.use_error_reporting = false
+  # Deshabilitar Google Cloud Error Reporting
+  config.google_cloud.use_error_reporting = false
 
-# Deshabilitar Google Cloud Trace
-config.google_cloud.use_trace = false
+  # Deshabilitar Google Cloud Trace
+  config.google_cloud.use_trace = false
   
 end
