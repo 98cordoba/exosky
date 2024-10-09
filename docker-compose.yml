@@ -7,6 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile
     command: bundle exec rails s -p 3000 -b '0.0.0.0'  # Command to start the Rails server
+    entrypoint: ["/bin/bash", "/rails/bin/docker-entrypoint"]
     ports:
       - "3000:3000"  # Expose ports for accessing the application
     volumes:
@@ -16,6 +17,7 @@ services:
     environment:
       DATABASE_URL: postgres://postgres:postgres@db:5432/exosky  # Database connection parameters
       SECRET_KEY_BASE: Rails.application.credentials.secret_key_base
+      PORT: 8080
 
   # Service for the PostgreSQL database
   db:
