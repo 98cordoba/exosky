@@ -12,6 +12,8 @@ services:
       - "8080:8080"  # Expose ports for accessing the application
     volumes:
       - .:/app  # Mount the current directory inside the container
+      # - ./config/master.key:/rails/config/master.key  # Mount the master key into the container
+      # - ./config/credentials/production.key:/rails/config/credentials/production.key  # Mount the master key into the container
     # depends_on:
     #   - db  # Specify dependency on the database service
     depends_on:
@@ -24,9 +26,11 @@ services:
       REDIS_URL: redis://redis:6379/1
 
   redis:
-    image: redis:6.2
+    image: "redis:7-alpine"
     ports:
-      - "6379:6379"
+      - 6379
+    volumes:
+      - ./tmp/redis_data:/var/lib/redis/data
 
 #   # Service for the PostgreSQL database
 #   db:
