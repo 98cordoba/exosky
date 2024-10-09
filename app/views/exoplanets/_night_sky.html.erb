@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Hub Interface</title>
+    <title>Exoplanet Navigation</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         body, html {
@@ -11,117 +11,278 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden;
-            background: black;
             font-family: Arial, sans-serif;
-            color: white;
+            color: #f0f0f0; /* Light Gray for comfortable contrast */
+            background-color: #2e1a47; /* Dark Muted Purple for background */
+            overflow: hidden;
         }
+
+        /* Top Right: Menu Icons */
         .menu-icons {
-            position: absolute;
+            position: fixed;
             top: 20px;
-            left: 20px;
+            right: 20px;
             display: flex;
             flex-direction: column;
             gap: 15px;
-            z-index: 100;
+            z-index: 200;
         }
+
         .menu-icons .material-icons {
-            color: white;
-            font-size: 36px;
+            color: #93b4d8; /* Soft Cyan Accent for icons */
+            font-size: 2.5rem;
             cursor: pointer;
-            transition: transform 0.3s;
+            transition: transform 0.3s, color 0.3s;
         }
+
         .menu-icons .material-icons:hover {
-            transform: scale(1.2);
+            transform: scale(1.1);
+            color: #c7d6f3; /* Lighter cyan when hovered for gentle visual feedback */
         }
+
+        /* Main Container */
         .main-frame {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
             text-align: center;
+            padding: 2rem;
         }
+
+        /* Title */
         .main-frame .title {
-            color: cyan;
+            font-family: 'Protest Strike', sans-serif;
+            color: #b39ddb; /* Light Lavender Purple for Title */
             font-size: 3rem;
-            font-weight: bold;
-            text-shadow: 0 0 10px cyan;
         }
+
+        /* Exoplanet Dropdown */
         #exoplanet-select {
-            margin-top: 20px;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            border: 1px solid cyan;
-            border-radius: 10px;
-            box-shadow: 0 0 10px cyan;
+            width: 80%;
+            max-width: 300px;
+            height: 40px;
+            text-align: center;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background-color: #3f2c59; /* Muted Dark Purple */
+            color: #f0f0f0; /* Light text for high contrast */
+            border-radius: 0.5rem;
+            border: solid #93b4d8; /* Cyan Border */
+            box-shadow: 0 0 10px rgba(147, 180, 216, 0.3);
             transition: box-shadow 0.3s;
         }
+
         #exoplanet-select:hover {
-            box-shadow: 0 0 20px cyan;
+            box-shadow: 0 0 15px rgba(199, 214, 243, 0.5); /* Lighter shadow to indicate interaction */
         }
+
+        /* Tools Container (Bottom Center) */
         .tools-container {
-            position: absolute;
+            position: fixed;
             bottom: 20px;
-            left: 20px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.1);
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(67, 50, 92, 0.3); /* Transparent Purple */
             border-radius: 10px;
-            width: 250px;
-            z-index: 100;
+            width: 90%;
+            max-width: 300px;
+            z-index: 200;
+            padding: 1rem;
         }
+
         .tools-container .tools {
             display: flex;
             gap: 20px;
             justify-content: center;
         }
+
         .tools-container .material-icons {
-            color: white;
-            font-size: 36px;
+            color: #ffb74d; /* Soft Orange Accent for tools */
+            font-size: 2rem;
             cursor: pointer;
-            transition: transform 0.3s;
+            transition: transform 0.3s, color 0.3s;
         }
+
         .tools-container .material-icons:hover {
-            transform: scale(1.2);
+            transform: scale(1.1);
+            color: #ffd699; /* Lighter orange on hover */
         }
+
         .dashboard-border {
-            border: 2px solid cyan;
+            border: 2px solid #93b4d8; /* Cyan Border */
             padding: 10px;
             border-radius: 15px;
         }
+
+        /* Canvas Background */
         .canvas-background {
+            width: 100vw;
+            height: 100vh;
             position: fixed;
             top: 0;
             left: 0;
+            z-index: 1;
+            pointer-events: auto;
+        }
+
+        /* Exoplanet Information (Top Left) */
+        .current-exoplanet {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 200;
+            background: #3f2c59; /* Muted Dark Purple */
+            color: #ffb74d; /* Soft Orange for contrast and highlight */
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            font-size: 1.2rem;
+            max-width: 250px;
+        }
+
+        /* Exoplanet Description Box */
+        .exoplanet-info {
+            margin-top: 10px;
+            background: #5a3b7d; /* Medium Purple for info box */
+            color: #f0f0f0; /* Light Gray text for accessibility */
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* AI Fetch Button for Exoplanet Info */
+        .ai-fetch-button {
+            margin-top: 10px;
+            background: #93b4d8; /* Cyan for visual cue of interaction */
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .ai-fetch-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(147, 180, 216, 0.5);
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
             width: 100%;
-            height: 100%;
-            z-index: 0;
+            text-align: center;
+            background-color: #3f2c59; /* Muted Dark Purple */
+            color: #f0f0f0;
+            padding: 1rem;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Mobile View Adjustments */
+        @media (max-width: 768px) {
+            .menu-icons {
+                top: 10px;
+                right: 10px;
+                gap: 10px;
+            }
+
+            .menu-icons .material-icons {
+                font-size: 2rem;
+            }
+
+            .tools-container {
+                width: 80%;
+                bottom: 10px;
+            }
+
+            .tools-container .material-icons {
+                font-size: 1.5rem;
+            }
+
+            .current-exoplanet {
+                font-size: 1rem;
+                padding: 0.8rem;
+            }
+
+            .exoplanet-info {
+                font-size: 0.9rem;
+            }
+
+            .ai-fetch-button {
+                width: 40px;
+                height: 40px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Menu Icons -->
-    <div class="menu-icons">
-        <span class="material-icons">menu</span>
-        <span class="material-icons">home</span>
-        <span class="material-icons">picture_as_pdf</span>
-        <span class="material-icons">settings</span>
-        <span class="material-icons">info</span>
-    </div>
+    <div id="main-frame" data-controller="exosky"
+         data-exoplanet='<%= raw exoplanet.to_json %>' 
+         data-stars='<%= raw stars.to_json %>'
+        data-exosky-gas-surface="<%= asset_path('gas/variant_1.png') %>"
+        data-exosky-gas-bump="<%= asset_path('gas/variant_2.png') %>"
+        data-exosky-water-surface="<%= asset_path('water/variant_1.png') %>"
+        data-exosky-water-bump="<%= asset_path('water/variant_2.png') %>"
+        data-exosky-rock-surface="<%= asset_path('rock/variant_1.png') %>"
+        data-exosky-rock-bump="<%= asset_path('rock/variant_2.png') %>">
 
-
-    <!-- Tools Container -->
-    <div class="tools-container dashboard-border">
-        <h4>Navigation Tools</h4>
-        <div class="tools">
-            <span class="material-icons">explore</span>
-            <span class="material-icons">flight</span>
-            <span class="material-icons">gps_fixed</span>
+        <!-- Current Exoplanet Display -->
+        <div class="current-exoplanet" aria-label="Exoplanet Information">
+            Exoplanet: <span id="current-exoplanet-name"><%= exoplanet.pl_name %></span>
+            <div class="exoplanet-info" id="exoplanet-info" aria-live="polite">
+                Click the robot icon for more information.
+            </div>
+            <div class="ai-fetch-button" id="fetch-info-button" aria-label="Fetch information about the exoplanet">
+                <span class="material-icons" aria-hidden="true">smart_toy</span>
+            </div>
         </div>
+
+        <!-- Menu Icons (Top Right) -->
+        <div class="menu-icons">
+            <span class="material-icons" aria-label="Home">home</span>
+            <span class="material-icons" aria-label="Menu">menu</span>
+            <span class="material-icons" aria-label="Settings">settings</span>
+            <span class="material-icons" aria-label="Information">info</span>
+            <span class="material-icons" aria-label="Export to PDF">picture_as_pdf</span>
+        </div>
+
+        <!-- Tools Container (Bottom Center) -->
+        <div class="tools-container dashboard-border">
+            <div class="tools">
+                <span class="material-icons" aria-label="Explore">explore</span>
+                <span class="material-icons" aria-label="Flight">flight</span>
+                <span class="material-icons" aria-label="GPS Fixed">gps_fixed</span>
+            </div>
+        </div>
+
+        <!-- Canvas Background -->
+        <div data-exosky-target="canvas" class="canvas-background"></div>
     </div>
 
-    <!-- Canvas Background -->
-    <div data-welcome-target="canvas" class="canvas-background"></div>
+    <script>
+        // JavaScript to ensure canvas resizes correctly
+        window.addEventListener('resize', function() {
+            const canvas = document.querySelector('.canvas-background');
+            canvas.style.width = window.innerWidth + 'px';
+            canvas.style.height = window.innerHeight + 'px';
+        });
+
+        // Trigger resize to initialize correct canvas size
+        window.dispatchEvent(new Event('resize'));
+
+        // JavaScript function to handle AI API call
+        document.getElementById('fetch-info-button').addEventListener('click', function() {
+            // Placeholder: Actual API call can be implemented here
+            document.getElementById('exoplanet-info').innerHTML = `
+                Distance from Earth: 500 light years <br>
+                Size: 2.5 times the radius of Earth
+            `;
+        });
+    </script>
 </body>
 </html>

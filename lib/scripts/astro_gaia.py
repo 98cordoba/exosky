@@ -21,9 +21,10 @@ def query_gaia_v1(ra, dec):
 def query_gaia_v2():
     # Query bright stars (magnitude less than 10) across the entire sky
     query = """
-    SELECT TOP 10000 ra, dec, parallax, phot_g_mean_mag
+    SELECT TOP 20000 source_id, ra, dec, parallax, phot_g_mean_mag 
     FROM gaiadr3.gaia_source
     WHERE phot_g_mean_mag < 10
+    AND source_id IS NOT NULL
     AND parallax IS NOT NULL
     AND ra IS NOT NULL
     AND dec IS NOT NULL

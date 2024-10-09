@@ -1,62 +1,171 @@
-<%= turbo_stream_from "gaia-channel-#{@session_id}" %>
-<div id="main-frame" data-session-id="<%= @session_id %>">
-  <div data-controller="loading" data-loading-galaxy="<%= asset_path('galaxy.jpg') %>">
-    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
-        <div style="font-family: 'Protest Strike', sans-serif; color: white; font-size: 3rem;">
-            Let's explore the universe together
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AstroMichi Loading</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        /* Base styling */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            color: #f0f0f0; /* Light gray for readable contrast */
+            background-color: #2e1a47; /* Dark muted purple for calming effect */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative; /* Added to create a stacking context */
+        }
+
+        /* Main frame containing all the loading elements */
+        #main-frame {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 10; /* Ensure this content is above the background */
+        }
+
+        /* Loading container positioned in the center */
+        .loading-container {
+            text-align: center;
+            z-index: 100; /* Ensure visibility above all other elements */
+            max-width: 90%;
+        }
+
+        /* Loading Title */
+        .loading-title {
+            font-family: 'Protest Strike', sans-serif;
+            color: #b39ddb; /* Lavender purple for title */
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Loading Text */
+        .loading-text {
+            color: #93b4d8; /* Soft cyan for loading text */
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px rgba(147, 180, 216, 0.3); /* Subtle shadow for smooth appearance */
+        }
+
+        /* Progress Bar Styles */
+        .progress-bar {
+            width: 80%;
+            max-width: 400px;
+            background-color: #3f2c59; /* Muted dark purple for background */
+            border-radius: 0.5rem;
+            overflow: hidden;
+            margin: 1.5rem auto;
+            box-shadow: 0 0 15px rgba(147, 180, 216, 0.2);
+        }
+
+        .progress-bar-inner {
+            width: 0%; /* Start at 0% */
+            height: 1rem;
+            background-color: #ffae42; /* Soft orange for progress */
+            transition: width 0.5s ease-in-out; /* Smooth progress */
+        }
+
+        /* Centered Image */
+        .centered-image {
+            display: block;
+            margin: 1.5rem auto;
+            width: 180px;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Background for galaxy image */
+        .loading-canvas {
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: url('<%= asset_path('galaxy.jpg') %>') center center / cover no-repeat;
+            z-index: 1; /* Place background behind other content */
+            opacity: 0.6; /* Slight transparency to ensure content stands out */
+        }
+
+        /* Mobile View Adjustments */
+        @media (max-width: 768px) {
+            .loading-title {
+                font-size: 2rem;
+            }
+
+            .loading-text {
+                font-size: 2rem;
+            }
+
+            .progress-bar {
+                width: 90%;
+            }
+
+            .centered-image {
+                width: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="main-frame">
+        <%= turbo_stream_from "gaia-channel-#{@session_id}" %>
+        <div data-controller="loading" data-loading-galaxy="<%= asset_path('galaxy.jpg') %>">
+
+            <!-- Loading Content Completely Centered -->
+            <div class="loading-container">
+                <div class="loading-title">
+                    Let's explore the universe together
+                </div>
+                
+                <div class="loading-text">
+                    Loading
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="progress-bar">
+                    <div class="progress-bar-inner" id="progress-bar-inner"></div>
+                </div>
+
+                <!-- Centered Image -->
+                <img src="<%= asset_path('astro-michis.png') %>" alt="Astro Michi Image" class="centered-image">
+            </div>
         </div>
-      <div class="flex justify-center items-center text-cyan-500 shadow-cyan-50 font-bold text-3xl">
-        Loading
-      </div>
-      <div class="progress-bar" style="width: 100%; background-color: #4a5568; border-radius: 0.5rem; overflow: hidden; margin-top: 1rem;">
-        <div class="progress-bar-inner" style="width: 50%; height: 1rem; background-color: #00ffff; transition: width 0.3s ease-in-out;"></div>
-      </div>
-      <img src="<%= asset_path('astro-michis.png') %>" alt="Centered Image" class="centered-image" style="display: block; margin: 1rem auto; width: 300px; height: auto;">
+
+        <!-- Canvas Background -->
+        <div id="canvas" data-loading-target="canvas" class="loading-canvas"></div>
     </div>
-    <div data-loading-target="canvas" class="w-full h-full fixed top-0 left-0"></div>
-  </div>
-</div>
 
-<style>
-  .progress-bar {
-    width: 100%;
-    background-color: #4a5568;
-    border-radius: 0.5rem;
-    overflow: hidden;
-    margin-top: 1rem;
-  }
-.progress-bar-inner {
-  width: 0%; /* Start at 0% */
-  height: 1rem;
-  background-color: #00ffff;
-  transition: width 0.3s ease-in-out;
-}
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const progressBar = document.getElementById("progress-bar-inner");
+            let progress = 0;
 
-  .centered-image {
-    display: block;
-    margin: 1rem auto;
-    width: 300px;
-    height: auto;
-  }
-</style>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-  const progressBar = document.querySelector(".progress-bar-inner");
-  
-  // Function to simulate progress
-  function simulateProgress() {
-    let progress = 0;
-    const interval = setInterval(function() {
-      if (progress >= 100) {
-        clearInterval(interval);
-      } else {
-        progress += 1;
-        progressBar.style.width = progress + "%";
-      }
-    }, 50); // Adjust this interval time to control speed (50ms for smooth progress)
-  }
-  
-  // Call the function to simulate progress
-  simulateProgress();
-});
-</script>
+            // Function to increment progress smoothly
+            function updateProgress() {
+                // Simulate loading progress by incrementing in small steps
+                progress += Math.random() * 10; // Add random value for smoother experience
+                progressBar.style.width = Math.min(progress, 100) + "%"; // Set width and ensure max of 100%
+
+                if (progress < 100) {
+                    // Continue updating progress every 500ms until complete
+                    setTimeout(updateProgress, 500);
+                }
+            }
+
+            // Start the progress update process
+            updateProgress();
+        });
+    </script>
+</body>
+</html>

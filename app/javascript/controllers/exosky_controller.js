@@ -51,6 +51,7 @@ export default class extends Controller {
     }
   }
 
+
   initThreeJS() {
     // Initialize scene, camera, and renderer
     this.scene = new THREE.Scene();
@@ -92,9 +93,11 @@ export default class extends Controller {
   updateSceneWithStarData(starData) {
     const starGeometry = new THREE.BufferGeometry();
     const positions = [];
+    const colors = [];
+    const sizes = [];
 
     starData.forEach((star, index) => {
-      const { ra, dec, parallax } = star; // RA, Dec in degrees, parallax in milliarcseconds
+      const { ra, dec, parallax, phot_g_mean_mag } = star; // RA, Dec in degrees, parallax in milliarcseconds, magnitude
 
       if (!parallax || parallax <= 0) {
         console.warn(`Star ${index + 1} has invalid parallax: ${parallax}. Skipping...`);
@@ -103,7 +106,7 @@ export default class extends Controller {
 
       // Calculate distance in parsecs using the parallax value
       const distance = this.calculateDistanceFromParallax(parallax);
-      let scaledDistance = distance*100
+      let scaledDistance = distance * 1000;
 
       // Convert RA/Dec to Cartesian coordinates and scale the distance
       const starPosition = this.convertRaDecToXYZ(ra, dec, scaledDistance);
@@ -113,14 +116,24 @@ export default class extends Controller {
 
       // Add the x, y, z positions into the positions array
       positions.push(starPosition.x, starPosition.y, starPosition.z);
+
+      // Determine star color based on magnitude (simplified)
+      const color = this.getStarColor(phot_g_mean_mag);
+      colors.push(color.r, color.g, color.b);
+
+      // Determine star size based on magnitude (simplified)
+      const size = this.getStarSize(phot_g_mean_mag);
+      sizes.push(size);
     });
 
-    // Set positions into buffer geometry
+    // Set positions, colors, and sizes into buffer geometry
     starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+    starGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+    starGeometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
 
     // Create star material
     const starMaterial = new THREE.PointsMaterial({
-      color: 0xffffff,
+      vertexColors: true,
       size: 5, // Adjust star size
       transparent: true,
       opacity: 0.9,
@@ -152,6 +165,22 @@ export default class extends Controller {
 
     console.log(`Converted to Cartesian: x = ${x}, y = ${y}, z = ${z}`);
     return new THREE.Vector3(x, y, z);
+  }
+
+  // Function to get star color based on magnitude (simplified)
+  getStarColor(magnitude) {
+    // Simplified color determination based on magnitude
+    if (magnitude < 2) return new THREE.Color(0x9bb0ff); // Blue
+    if (magnitude < 4) return new THREE.Color(0xaabfff); // Light Blue
+    if (magnitude < 6) return new THREE.Color(0xcad7ff); // White
+    if (magnitude < 8) return new THREE.Color(0xffd2a1); // Light Yellow
+    return new THREE.Color(0xffa07a); // Red
+  }
+
+  // Function to get star size based on magnitude (simplified)
+  getStarSize(magnitude) {
+    // Simplified size determination based on magnitude
+    return Math.max(0.1, 10 - magnitude); // Ensure size is at least 0.1
   }
 
   // Animation loop

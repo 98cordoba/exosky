@@ -1,28 +1,138 @@
-<div id="main-frame">
-    <div data-controller="welcome" data-welcome-galaxy="<%= asset_path('galaxy.jpg') %>">
-        <div style="display: grid; place-items: center; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 50; text-align: center;">
-            <div style="font-family: 'Protest Strike', sans-serif; color: white; font-size: 3rem;">
-                Welcome to the AstroMichi's exploration module
-            </div>
-            <select id="exoplanet-select" 
-                    data-action="change->welcome#selectExoplanet"
-                    data-welcome-target="exoplanet"
-                    style="width: 300px; height: 40px; text-align: center; margin-top: 0.5rem; padding: 0.5rem; background-color: #1a202c; color: white; border-radius: 0.5rem; border: 1px solid #4a5568; box-shadow: 0 0 10px rgba(0, 255, 255, 0.5); transition: all 0.3s ease-in-out;">
-                <option style="text-align: center; color: white; font-weight: bold;" value="">Select your Exoplanet</option>
-                <% @exoplanets.each do |exoplanet| %>
-                    <option value="<%= exoplanet.id %>"><%= exoplanet.pl_name %></option>
-                <% end %>
-            </select>
-        </div>
-        <div data-welcome-target="canvas" style="width: 100%; height: 100%; position: fixed; top: 0; left: 0;"></div>
-    </div>
-    <footer style="position: absolute; bottom: 0; width: 100%; text-align: center; background-color: #1a202c; color: white; padding: 1rem; font-family: 'Arial', sans-serif;">
-        <p>Explore the night sky and see what the stars would look like from the perspective of the selected exoplanet</p>
-    </footer>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AstroMichi Welcome</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            color: #f0f0f0; /* Light Gray for comfortable contrast */
+            background-color: #2e1a47; /* Dark Muted Purple for background */
+            overflow: hidden;
+        }
 
-<style>
-  #exoplanet-select:hover {
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
-  }
-</style>
+        #main-frame {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        /* Welcome Container Positioned at Top and Centered */
+        .welcome-container {
+            position: absolute;
+            top: 20px; /* Positioned at the top of the page */
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 100;
+        }
+
+        /* Welcome Title */
+        .welcome-title {
+            font-family: 'Protest Strike', sans-serif;
+            color: #b39ddb; /* Light Lavender Purple for Title */
+            font-size: 2.5rem;
+            margin-bottom: 1rem; /* Provide spacing for dropdown */
+        }
+
+        /* Exoplanet Selection Dropdown */
+        #exoplanet-select {
+            width: 80%;
+            max-width: 300px;
+            height: 40px;
+            text-align: center;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background-color: #3f2c59; /* Muted Dark Purple */
+            color: #f0f0f0; /* Light text for high contrast */
+            border-radius: 0.5rem;
+            border: solid #93b4d8; /* Cyan Border */
+            box-shadow: 0 0 10px rgba(147, 180, 216, 0.3);
+            transition: box-shadow 0.3s, transform 0.3s;
+        }
+
+        #exoplanet-select:hover {
+            box-shadow: 0 0 15px rgba(199, 214, 243, 0.5); /* Softer highlight */
+            transform: scale(1.05); /* Gently enlarge to indicate focus */
+        }
+
+        /* Canvas Background for Galaxy Image */
+        .welcome-canvas {
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: url('<%= asset_path('galaxy.jpg') %>') center center / cover no-repeat; /* Background image */
+            z-index: 0;
+        }
+
+        /* Footer for Welcome Page */
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            background-color: #3f2c59; /* Muted Dark Purple for footer */
+            color: #f0f0f0; /* Light Gray text for contrast */
+            padding: 1rem;
+            font-family: 'Arial', sans-serif;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Mobile View Adjustments */
+        @media (max-width: 768px) {
+            .welcome-title {
+                font-size: 2rem;
+            }
+
+            #exoplanet-select {
+                width: 90%;
+                height: 35px;
+            }
+
+            footer {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="main-frame">
+        <div data-controller="welcome" data-welcome-galaxy="<%= asset_path('galaxy.jpg') %>">
+
+            <!-- Welcome Content Positioned at the Top Center -->
+            <div class="welcome-container">
+                <div class="welcome-title">
+                    Welcome to AstroMichi's Exploration Module
+                </div>
+                <select id="exoplanet-select" 
+                        data-action="change->welcome#selectExoplanet"
+                        data-welcome-target="exoplanet"
+                        aria-label="Select your exoplanet">
+                    <option style="text-align: center; color: #b39ddb;" value="" disabled selected>
+                        Select your Exoplanet
+                    </option>
+                    <% @exoplanets.each do |exoplanet| %>
+                        <option value="<%= exoplanet.id %>"><%= exoplanet.pl_name %></option>
+                    <% end %>
+                </select>
+            </div>
+
+            <!-- Canvas Background -->
+            <div data-welcome-target="canvas" class="welcome-canvas"></div>
+        </div>
+
+        <!-- Footer Section -->
+        <footer>
+            <p>Explore the night sky and see what the stars would look like from the perspective of the selected exoplanet</p>
+        </footer>
+    </div>
+</body>
+</html>
